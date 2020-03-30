@@ -1,5 +1,7 @@
 package com.dbr.controller;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dbr.model.RabbitMessage;
 import com.dbr.model.User;
 
 @RestController
@@ -42,6 +45,15 @@ public class SendController {
 		User user = new User(UUID.randomUUID().toString(), message, "123456", "sendFanout");
 		template.convertAndSend("fanoutExchange", null, user);
 		return "OK,sendFanout:" + message;
+	}
+	
+	@GetMapping("/nb")
+	private String sendNB(String message) {
+		Map<String, String> serviceMap = new HashMap<String, String>();
+		serviceMap.put("value", message);
+		RabbitMessage messate = new RabbitMessage(UUID.randomUUID().toString(), serviceMap);
+ 		template.convertAndSend("topicExchange", "topic.message", JsonUtil.jsonObj2Sting(messate));
+		return "OK,sendNB:" + message;
 	}
 	
 }

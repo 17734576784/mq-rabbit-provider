@@ -12,6 +12,7 @@ public class TopicRabbitConfig {
 
 	public final static String first = "topic.first";
 	public final static String second = "topic.second";
+	public final static String message = "topic.message";
 
 	@Bean
 	public Queue firstQueue() {
@@ -21,6 +22,11 @@ public class TopicRabbitConfig {
 	@Bean
 	public Queue secondQueue() {
 		return new Queue(TopicRabbitConfig.second);
+	}
+	
+	@Bean
+	public Queue messageQueue() {
+		return new Queue(TopicRabbitConfig.message);
 	}
 
 	@Bean
@@ -38,6 +44,12 @@ public class TopicRabbitConfig {
 	@Bean
 	Binding bindingExchangeMessage2() {
 		return BindingBuilder.bind(secondQueue()).to(exchange()).with("topic.#");
+	}
+
+	// 绑定topic.second队列到topic.#，凡是topic.开头的routingKey消息都发送到此队列
+	@Bean
+	Binding bindingExchangeMessage3() {
+		return BindingBuilder.bind(secondQueue()).to(exchange()).with(message);
 	}
 
 }
